@@ -6,21 +6,26 @@
    http://www.springframework.org/schema/aop
    http://www.springframework.org/schema/aop/spring-aop-4.0.xsd">
 	
-    <bean id = "validAspect" class = "tel_ran.aop.validation.VulgarWordsValidation"/>
-    <bean id = "chat" class = "tel_ran.chat.ChatRoom">
-         <constructor-arg name = "expressions">
+    <bean id = "validAspect" class = "tel_ran.aop.validation.VulgarWordsValidation">
+        <constructor-arg name = "vul">
 	        <array>
 	            <value>bad</value>
 	            <value>word2</value>
 	        </array>
 	    </constructor-arg>
     </bean>
+     <bean id = "performAspect" class = "tel_ran.aop.benchmarking.PerformanceTest"/>
+    <bean id = "chat" class = "tel_ran.chat.ChatRoom"></bean>
     
 	<aop:aspectj-autoproxy/>
 	<aop:config>
 		<aop:aspect ref="validAspect">
 			<aop:pointcut expression="execution(public * *(..)) and not execution(public * rep*(..))" id="allFunctions" />
 			<aop:around method="validate" pointcut-ref="allFunctions" />
+		</aop:aspect>
+		<aop:aspect ref="performAspect">
+			<aop:pointcut expression="execution(public * rep*(..))" id="reply" />
+			<aop:around method="watchPerformance" pointcut-ref="reply" />
 		</aop:aspect>
 	</aop:config>
 	
